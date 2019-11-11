@@ -2,6 +2,9 @@ const express = require("express");
 
 const routes = require("./routes/tl_routes");
 const app = express();
-const port = 8080;
+const server_port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
+const server_ip_address = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
 app.use("/", routes);
-app.listen(port, () => console.log(`Server listening on port ${port}!`));
+app.listen(server_port, server_ip_address, () =>
+  console.log(`Server listening on port ${server_ip_address}:${server_port}!`)
+);
