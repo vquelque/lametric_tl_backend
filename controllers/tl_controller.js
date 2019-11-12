@@ -1,7 +1,7 @@
 const request = require("request-promise");
 
 async function getNextDepartures(req, res, next) {
-  var limit = req.query.limit;
+  var limit = parseInt(req.query.limit);
   if (limit < 0 || limit > 5) {
     limit = 3;
   }
