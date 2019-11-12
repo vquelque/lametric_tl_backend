@@ -5,12 +5,13 @@ async function getNextDepartures(req, res, next) {
   if (limit < 0 || limit > 5) {
     limit = 3;
   }
+  query_limit = limit + 1; //add one more if next departure too close
   const options = {
     method: "GET",
     uri: "http://transport.opendata.ch/v1/connections",
     json: true,
     qs: {
-      limit: limit,
+      limit: query_limit,
       from: req.query.from,
       to: req.query.to,
       fields: ["connections/from/departure", "connections/to/arrival"]
@@ -21,14 +22,23 @@ async function getNextDepartures(req, res, next) {
       var departures = [];
       response.connections.forEach(item => {
         var d = new Date(item.from.departure);
+        var today = new Date();
         var time =
           (d.getHours() < 10 ? "0" : "") +
           d.getHours() +
           ":" +
           (d.getMinutes() < 10 ? "0" : "") +
           d.getMinutes();
-        departures.push(time);
+        //add only if we are not to close to next departure
+        // 1minute (in ms) here
+        if (d - today > 1 * 60 * 1000) {
+          departures.push(time);
+        }
       });
+      //remove last item depending on wether we are too close to next departure
+      if (departures.length > limit) {
+        departures.pop();
+      }
       json = formatJSON(departures);
       res.send(json);
     })
