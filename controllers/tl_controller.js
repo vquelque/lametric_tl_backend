@@ -5,7 +5,7 @@ async function getNextDepartures(req, res) {
   var limit = parseInt(req.query.limit);
   var departures;
   var station = req.query.from;
-  if (limit < 0 || limit > 5) {
+  if (limit < 0 || limit > 5 || !limit) {
     limit = 3;
   }
   if (
