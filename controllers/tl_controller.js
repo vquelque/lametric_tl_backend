@@ -12,7 +12,7 @@ async function getNextDepartures(req, res) {
     !departuresForStation.has(station) ||
     departuresForStation.get(station).length < limit
   ) {
-    query_api(req, function(resp) {
+    query_api(req, function (resp) {
       departures = getNextDepartureForStation(req, limit);
       json = formatJSON(departures);
       res.send(json);
@@ -26,14 +26,14 @@ async function getNextDepartures(req, res) {
 
 function formatJSON(departures) {
   var json = {
-    frames: []
+    frames: [],
   };
   var index = 0;
-  departures.forEach(item => {
+  departures.forEach((item) => {
     connection = {
       text: item,
       icon: "a1395",
-      index: index
+      index: index,
     };
     json.frames.push(connection);
     ++index;
@@ -54,7 +54,7 @@ function getNextDepartureForStation(req, limit) {
     departures.shift();
   }
   nextDepartures = departures.slice(0, limit);
-  nextDepartures.forEach(item => {
+  nextDepartures.forEach((item) => {
     var time =
       (item.getHours() < 10 ? "0" : "") +
       item.getHours() +
@@ -76,25 +76,25 @@ function query_api(req, callback) {
       from: req.query.from,
       to: req.query.to,
       limit: 16, //max limit
-      fields: ["connections/from/departure", "connections/to/arrival"]
-    }
+      fields: ["connections/from/departure", "connections/to/arrival"],
+    },
   };
   request(options)
-    .then(function(response) {
+    .then(function (response) {
       var departures = [];
-      response.connections.forEach(item => {
+      response.connections.forEach((item) => {
         var d = new Date(item.from.departure);
         departures.push(d);
       });
       departuresForStation.set(req.query.from, departures);
       callback(departures);
     })
-    .catch(function(err) {
+    .catch(function (err) {
       console.log("error making API call");
       console.log(err);
     });
 }
 
 module.exports = {
-  getNextDepartures
+  getNextDepartures,
 };
